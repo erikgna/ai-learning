@@ -10,6 +10,8 @@ RUN pip install -r requirements.txt
 
 ADD train .
 ADD validation .
+ADD uploads .
 ADD index.py .
+ADD define.py .
 
 CMD ["python", "-u", "index.py"]

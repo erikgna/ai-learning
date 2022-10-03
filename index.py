@@ -1,39 +1,36 @@
-import gc
-
-from keras.preprocessing.image import ImageDataGenerator
-
-from keras.models import Sequential
-from keras.layers import Conv2D, Activation, MaxPooling2D, Flatten, Dense, Dropout
-import tensorflow as tf
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D
+from tensorflow.keras.layers import Activation, Dropout, Flatten, Dense
 from tensorflow.keras import backend as K
 
-IMG_WIDTH, IMG_HEIGHT = 150, 150
+IMG_WIDTH, IMG_HEIGHT = 224, 224
 
-TRAIN_DATA_DIR = 'train'
-VALIDATION_DATA_DIR = 'validation'
-NB_TRAIN_SAMPLES = 3
-NB_VALIDATION_SAMPLES = 3
-EPOCHS = 1
-BATCH_SIZE = 1
+TRAIN_DATA_DIR = 'v_data/train'
+VALIDATION_DATA_DIR = 'v_data/test'
+NB_TRAIN_SAMPLES = 400
+NB_VALIDATION_SAMPLES = 100
+EPOCHS = 10
+BATCH_SIZE = 16
 
 def build_model():
     if K.image_data_format() == 'channels_first':
-        input_shape = (3, IMG_WIDTH, IMG_HEIGHT)
+	    input_shape = (3, IMG_WIDTH, IMG_HEIGHT)
     else:
-        input_shape = (IMG_WIDTH, IMG_HEIGHT, 3)
+	    input_shape = (IMG_WIDTH, IMG_HEIGHT, 3)
 
     model = Sequential()
-    model.add(Conv2D(32, (3, 3), input_shape=input_shape))
+    model.add(Conv2D(32, (2, 2), input_shape=input_shape))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(32, (3, 3)))
+    model.add(Conv2D(32, (2, 2)))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    model.add(Conv2D(64, (3, 3)))
+    model.add(Conv2D(64, (2, 2)))
     model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
 
     model.add(Flatten())
     model.add(Dense(64))
@@ -48,10 +45,10 @@ def build_model():
 
 def train_model(model):
     train_datagen = ImageDataGenerator(
-        rescale=1. / 255,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True)
+	rescale=1. / 255,
+	shear_range=0.2,
+	zoom_range=0.2,
+	horizontal_flip=True)
 
     test_datagen = ImageDataGenerator(rescale=1. / 255)
 
@@ -69,10 +66,11 @@ def train_model(model):
 
     model.fit(
         train_generator,
-        steps_per_epoch=NB_VALIDATION_SAMPLES // BATCH_SIZE,
+        steps_per_epoch=NB_TRAIN_SAMPLES // BATCH_SIZE,
         epochs=EPOCHS,
         validation_data=validation_generator,
         validation_steps=NB_VALIDATION_SAMPLES // BATCH_SIZE)
+
 
     return model
 
@@ -80,10 +78,6 @@ def save_model(model):
     model.save('saved_model.h5')
 
 def main():
-    myModel = None
-    tf.keras.backend.clear_session()
-    gc.collect()
-
     myModel = build_model()
     myModel = train_model(myModel)
     save_model(myModel)
