@@ -7,10 +7,21 @@
     <title>Document</title>
   </head>
   <body>
+    <h2>Pedágio Automatizado</h2>
+    <p>
+      A ideia é simular um pedágio, você pode inserir a foto de um véiculo e o
+      sistema irá identificar qual é o veículo e cobrará o devido valor para a
+      sua categoria.
+    </p>
     <form action="/" method="POST" enctype="multipart/form-data">
       <input type="file" name="image" id="image" />
-
       <input type="submit" value="Make Prediction" />
     </form>
+    {% if image %}
+    <img src="{{image}}" alt="Teste" />
+    {% endif %} {% if image %}
+    <h2>O veículo inserido foi: {{ type }} {{image}}</h2>
+    <p>O valor do pedágio será: R${{ value }}</p>
+    {% endif %}
   </body>
 </html>
